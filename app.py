@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, send_file
 import os
 from config import UPLOAD_FOLDER, STATIC_FOLDER
 from utils import save_image
+import time
 from tasks import process_image
 
 app = Flask(__name__)
@@ -19,11 +20,11 @@ def detect():
     photo_uid = request.form["photoUid"]
     if file.filename == "":
         return jsonify({"error": "No selected file"}), 400
-
-    # Celery 비동기 작업 실행
-    process_image.delay(photo_uid, file.read())
+    start_time = time.time()  # 요청을 받은 시점 기록
+    process_image.delay(photo_uid, file.read(), start_time)
 
     return jsonify({"message": "Processing started", "photoUid": photo_uid})
+
 
 @app.route("/result/<filename>")
 def result(filename):

@@ -2,6 +2,7 @@ from celery import Celery
 import os
 import json
 import requests
+import time
 from config import STATIC_FOLDER, CALLBACK_URL, CELERY_BROKER_URL, CELERY_RESULT_BACKEND
 from utils import save_image, load_image, draw_detections, run_detection
 
@@ -9,7 +10,9 @@ from utils import save_image, load_image, draw_detections, run_detection
 celery = Celery("tasks", broker=CELERY_BROKER_URL, backend=CELERY_RESULT_BACKEND)
 
 @celery.task
-def process_image(photo_uid, image_data):
+def process_image(photo_uid, image_data, start_time):
+    print(f"Task received at: {start_time}")
+    
     # 이미지 저장 및 로드
     filepath, filename = save_image(image_data)
     image = load_image(filepath)
@@ -42,5 +45,9 @@ def process_image(photo_uid, image_data):
 
     except requests.exceptions.RequestException as e:
         print(f"Error sending results: {e}")
+    
+    end_time = time.time()  # 결과 전송 완료 시간 기록
+    print(f"Task completed at: {end_time}")
+    print(f"Total processing time: {end_time - start_time} seconds")
 
     return response_data

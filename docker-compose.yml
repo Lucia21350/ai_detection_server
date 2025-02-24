@@ -8,10 +8,18 @@ services:
             - "6379:6379"
         networks:
             - app-network
+        deploy:
+            resources:
+                limits:
+                    cpus: "4.0" # 최대 2 CPU 사용
+                    memory: 16G # 최대 7GB 메모리 사용
+                reservations:
+                    cpus: "1.0" # 최소 1 CPU 사용
+                    memory: 1G # 최소 1GB 메모리 사용
 
     celery:
         build: .
-        command: celery -A tasks worker --concurrency=6 --loglevel=info
+        command: celery -A tasks worker --concurrency=4 --loglevel=info
         depends_on:
             - redis
         networks:
@@ -19,7 +27,14 @@ services:
         environment:
             - CELERY_BROKER_URL=redis://redis:6379/0
             - CELERY_RESULT_BACKEND=redis://redis:6379/0
-
+        deploy:
+            resources:
+                limits:
+                    cpus: "4.0" # 최대 2 CPU 사용
+                    memory: 16G # 최대 7GB 메모리 사용
+                reservations:
+                    cpus: "1.0" # 최소 1 CPU 사용
+                    memory: 1G # 최소 1GB 메모리 사용8
     web:
         build: .
         command: python app.py
@@ -29,6 +44,14 @@ services:
             - redis
         networks:
             - app-network
+        deploy:
+            resources:
+                limits:
+                    cpus: "4.0" # 최대 2 CPU 사용
+                    memory: 16G # 최대 7GB 메모리 사용
+                reservations:
+                    cpus: "1.0" # 최소 1 CPU 사용
+                    memory: 512M # 최소 512MB 메모리 사용
 
 networks:
     app-network:
