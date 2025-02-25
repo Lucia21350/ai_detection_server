@@ -4,7 +4,7 @@ import time
 
 API_URL = "http://localhost:5000/detect"
 IMAGE_PATH = "C:/Users/ljh86/Documents/ai_detection_server/uploads/1.jpg"
-NUM_REQUESTS = 50  # 동시에 보낼 요청 개수
+NUM_REQUESTS = 100  # 동시에 보낼 요청 개수
 
 # API 호출 함수
 def send_request(i, results):
